@@ -9,4 +9,5 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- Initial release of trysac-subtitle-tools with SRT/WebVTT parsing, format conversion, shifting, rational retiming, quality checks, and CLI.
 - Initial project structure from the factory utility template.

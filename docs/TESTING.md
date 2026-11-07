@@ -1,20 +1,10 @@
 # Testing
 
-## Running
+## Tests Coverage
 
-```sh
-uv run pytest --cov=subtitle_tools   # tests with coverage report
-uv run python scripts/check.py      # every gate, as CI and the factory run it
-```
-
-## Policy
-
-- Branch coverage of `src/subtitle_tools` must stay at or above 80 %; the gate fails below it.
-- Tests exercise the public API (`import subtitle_tools`) and assert every observable effect:
-  return values, raised exceptions and their messages.
-- Each bug fix starts with a failing test that reproduces it.
-- Tests are deterministic: no network, no wall clock, no dependence on test order.
-
-## Layout
-
-`tests/test_<module>.py` mirrors each public module. Shared fixtures go in `tests/conftest.py`.
+The tests are located in `tests/test_subtitle_tools.py`. They cover:
+- Parsing: Validation of SRT/VTT parsing logic, including BOM removal, line ending normalization, and handling of blank lines/comments.
+- Conversion: Ensuring tags and HTML entities are correctly converted and escaped between SRT and VTT formats.
+- Timing: Accuracy of `shift` and `retime` using rational arithmetic to handle frame-rate conversions without rounding errors.
+- Validation: `check` function verification for overlaps, duration, character-per-second (CPS) speed, and line length constraints.
+- Error Handling: Verifying that `SubtitleError` is raised with appropriate codes for input size limits, timing errors, and format mismatches.

@@ -2,18 +2,7 @@
 
 ## Threat model
 
-`trysac-subtitle-tools` is a pure library without I/O. The main risks are:
+`subtitle-tools` is a library without I/O or network dependencies.
 
-- **Supply chain**: a compromised dependency or CI action. Mitigation: no runtime dependencies,
-  Dependabot weekly updates, actions pinned to major versions, minimal workflow permissions.
-- **Leaked secrets**: tokens committed by mistake. Mitigation: `gitleaks` runs in the local gates
-  and in CI; `.env` files are git-ignored.
-- **Untrusted input**: callers may pass hostile strings. Mitigation: validate input and fail with
-  explicit exceptions; never `eval`, `exec` or deserialize untrusted data.
-
-## Publishing
-
-Releases are published to PyPI with trusted publishing (OIDC) when available, never with a
-long-lived token stored in the repository.
-
-To report a vulnerability, see [SECURITY.md](../SECURITY.md).
+- **Defended**: The parser validates input size (`max_chars`) and total cue count (`max_cues`) before processing, mitigating memory exhaustion from malicious or malformed files. All timestamps are validated against format constraints, and `SubtitleError` exceptions are raised for malformed data rather than propagating parser failure.
+- **Not Defended**: The library performs no sandboxing. If the caller passes untrusted, malicious input into `parse`, the library assumes the caller has already performed necessary I/O security checks. It does not perform arbitrary code execution; it strictly handles string processing of subtitle text.
