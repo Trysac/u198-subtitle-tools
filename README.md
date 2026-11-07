@@ -1,48 +1,37 @@
 # subtitle-tools
 
-[![PyPI version](https://img.shields.io/pypi/v/trysac-subtitle-tools)](https://pypi.org/project/trysac-subtitle-tools/)
-[![License: MIT](https://img.shields.io/pypi/l/trysac-subtitle-tools)](LICENSE)
-[![CI](https://github.com/Trysac/u198-subtitle-tools/actions/workflows/ci.yml/badge.svg)](https://github.com/Trysac/u198-subtitle-tools/actions/workflows/ci.yml)
-
-Parse, convert and retime SRT and WebVTT subtitles: exact millisecond timing, tag and entity handling, shift and frame-rate retiming, and readability checks
+Parse, convert and retime SRT and WebVTT subtitles: exact millisecond timing, tag and entity handling, shift and frame-rate retiming, and readability checks.
 
 ## Problem
+Subtitle files frequently suffer from format drift, incorrect frame rates (e.g., 25 fps source for 23.976 fps display), and incompatible tag/entity formatting when manually edited or processed by low-quality converters. This library provides a unified cue model to parse, retime, and audit subtitles without relying on third-party dependencies.
 
-Describe in two or three sentences the concrete problem this utility solves, who hits it, and what
-they do today without it. Replace this paragraph when the first real feature lands.
+## Installation
 
-## Install
-
-```sh
-pip install trysac-subtitle-tools
-# or
-uv add trysac-subtitle-tools
+```bash
+pip install subtitle-tools
 ```
 
-Requires Python 3.10 or newer. No runtime dependencies.
-
-## Usage
+## Usage Example
 
 ```python
-import subtitle_tools
+from fractions import Fraction
+from subtitle_tools import parse, render, retime
 
-# normalize() trims surrounding whitespace and lower-cases the text.
-print(subtitle_tools.normalize("  Hello World "))  # -> "hello world"
-
-# Blank input is rejected explicitly instead of returning an empty string.
-try:
-    subtitle_tools.normalize("   ")
-except ValueError as exc:
-    print(f"rejected: {exc}")
+content = "1\n00:00:01,000 --> 00:00:02,000\nHello World\n"
+cues = parse(content, "srt")
+retimed = retime(cues, Fraction(25, 24))
+vtt_output = render(retimed, "vtt")
+print(vtt_output)
 ```
 
-## Documentation
+## API Summary
 
-- [Architecture](docs/ARCHITECTURE.md) and [decisions](docs/decisions/)
-- [Testing](docs/TESTING.md) and [security](docs/SECURITY.md)
-- [Project record](docs/PROJECT.md) and [stack](docs/STACK.md)
-- [Changelog](CHANGELOG.md) and [contributing guide](CONTRIBUTING.md)
+- **Data**: `Cue` (frozen dataclass), `Issue` (auditing result).
+- **Functions**: `parse(text, fmt)`, `render(cues, fmt)`, `shift(cues, ms)`, `retime(cues, factor)`, `check(cues)`. 
+- **Limits**: `parse` enforces `max_chars` (default 10M) and `max_cues` (default 100k) to prevent memory exhaustion.
+- **Errors**: `SubtitleError` (codes: `input_too_large`, `too_many_cues`, `invalid_timestamp`, `missing_header`, `invalid_option`).
 
-## License
+## Why not <best-known alternative>
+Unlike `pysrt` or `webvtt-py`, `subtitle-tools` enforces a single, unified data model (`Cue`) for both SRT and WebVTT. It performs exact format conversion by handling tags and HTML entities bidirectionally, and uses `fractions.Fraction` for frame-rate retiming to prevent cumulative drift.
 
-[MIT](LICENSE) (c) 2026 Miguel Gomez
+For more details, see [docs/SECURITY.md](docs/SECURITY.md).

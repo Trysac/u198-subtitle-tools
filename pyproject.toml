@@ -19,6 +19,9 @@ classifiers = [
 ]
 dependencies = []
 
+[project.scripts]
+subtitle-tools = "subtitle_tools.__main__:main"
+
 [project.urls]
 Homepage = "https://github.com/Trysac/u198-subtitle-tools"
 Source = "https://github.com/Trysac/u198-subtitle-tools"
