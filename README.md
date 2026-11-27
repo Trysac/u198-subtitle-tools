@@ -7,8 +7,10 @@ Subtitle files frequently suffer from format drift, incorrect frame rates (e.g.,
 
 ## Installation
 
+Not published to PyPI yet. Install it from GitHub:
+
 ```bash
-pip install subtitle-tools
+pip install "git+https://github.com/Trysac/u198-subtitle-tools"
 ```
 
 ## Usage Example
